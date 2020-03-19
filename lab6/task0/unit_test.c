@@ -19,6 +19,7 @@ test_list_node_new() {
   char *val = "some value";
   snode_t *node = snode_create(val);
   assert(strcmp(snode_get_str(node), val)==0);
+  free(snode_get_str(node));
   free(node);
 }
 
@@ -32,6 +33,7 @@ test_list_add_back() {
   slist_add_back(list, "a");
   slist_add_back(list, "b");
   slist_add_back(list, "c");
+  
 
   // Assertions
   snode_t *a, *b, *c;
@@ -43,13 +45,13 @@ test_list_add_back() {
 
   assert(3 == slist_length(list));
 
- // b = snode_get_next(a);
- // assert(strcmp(snode_get_str(b), "b") == 0);
- // assert(c == snode_get_next(b));
- // assert(NULL == snode_get_next(c));
+  b = snode_get_next(a);
+  assert(strcmp(snode_get_str(b), "b") == 0);
+  assert(c == snode_get_next(b));
+  assert(NULL == snode_get_next(c));
   
   //slist_destroy calls snode_destroy
-  slist_destroy(list);
+  slist_destroy(list); 
 }
 
 static void
@@ -63,20 +65,23 @@ test_list_add_front() {
   slist_add_front(list, "c");
 
   snode_t *a, *b, *c;
+  
   c = slist_get_front(list);
   assert(strcmp(snode_get_str(c), "c") == 0);
+
 
   a = slist_get_back(list);
   assert(strcmp(snode_get_str(a), "a") == 0);
 
   assert(3 == slist_length(list));
 
- // b = snode_get_next(c);
- // assert(strcmp(snode_get_str(b), "b") == 0);
- // assert(a == snode_get_next(b));
- // assert(NULL == snode_get_next(a));
- 
-  slist_destroy(list);
+  b = snode_get_next(c);
+  assert(strcmp(snode_get_str(b), "b") == 0);
+  assert(a == snode_get_next(b));
+  assert(NULL == snode_get_next(a));
+
+  
+  slist_destroy(list); 
 }
 
 static void
@@ -106,7 +111,7 @@ test_list_find() {
 static void
 test_list_delete() {
   // Setup
-  list_t *list = slist_create();
+  slist_t *list = slist_create();
 
   // a b c
   slist_add_back(list, "a");
@@ -124,8 +129,10 @@ test_list_delete() {
 
   snode_t * c = slist_get_back(list);
   assert(strcmp(snode_get_str(c), "c") == 0);
-  //assert(c == snode_get_next(a));
+  assert(c == snode_get_next(a));
   assert(NULL == snode_get_next(c));
+  
+  
 
   slist_delete(list, "a");
   assert(1 == slist_length(list));
@@ -133,11 +140,12 @@ test_list_delete() {
   c = slist_get_front(list);
   assert(strcmp(snode_get_str(c), "c") == 0);
   assert(c == slist_get_back(list));
- // assert(NULL == snode_get_next(c));
+  assert(NULL == snode_get_next(c));
 
-  slist_delete(list, "c");
+ slist_delete(list, "c");
+
   assert(0 == slist_length(list));
-  assert(NULL == slist_get_front(list));
+ assert(NULL == slist_get_front(list));
   assert(NULL == slist_get_back(list));
 
   slist_destroy(list);
